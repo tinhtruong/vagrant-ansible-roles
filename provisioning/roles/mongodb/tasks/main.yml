@@ -1,0 +1,19 @@
+- name: Create the repository for 10Gen
+  copy: src=10gen.repo dest=/etc/yum.repos.d/10gen.repo
+
+- name: Create the mongod user
+  user: name=mongod comment="MongoD"
+
+- name: Create the directory for mongdb files
+  file: path={{ mongodbDir }} owner=mongod group=mongod state=directory
+
+- name: Install the mongodb package
+  yum: name={{ item }} state=installed
+  with_items:
+   - mongo-10gen-{{ mongodbVersion }}
+   - mongo-10gen-server-{{ mongodbVersion }}
+- name: Setup /etc/hosts
+  template: src=hosts dest=/etc/hosts
+
+- name: Start Mongod process
+  service: name=mongod state=started enabled=yes

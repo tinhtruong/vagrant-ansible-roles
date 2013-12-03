@@ -1,0 +1,30 @@
+- name: Install dependencies
+  yum: name={{ item }} state=installed
+  with_items:
+   - wget
+   - zlib-devel
+   - openssl-devel
+   - cpio
+   - expat-devel
+   - gettext-devel
+   - curl-devel
+   - perl-ExtUtils-CBuilder
+   - perl-ExtUtils-MakeMaker
+
+- name: Download source code for version {{ gitVersion }}
+  shell: wget -O /tmp/v{{ gitVersion }}.tar.gz http://git-core.googlecode.com/files/git-{{ gitVersion }}.tar.gz
+
+- name: Extract source tarball
+  shell: tar -xzvf /tmp/v{{ gitVersion }}.tar.gz -C /tmp
+
+- name: Compile 
+  shell: make prefix=/usr/local all chdir=/tmp/git-{{ gitVersion }}
+
+- name: Install
+  shell: make prefix=/usr/local install chdir=/tmp/git-{{ gitVersion }}
+
+- name: Clean up
+  shell: rm -rf {{ item }}
+  with_items:
+   - /tmp/git-{{ gitVersion }}
+   - /tmp/v{{ gitVersion}}.tar.gz

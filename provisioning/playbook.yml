@@ -1,0 +1,10 @@
+- hosts: all
+  user: vagrant
+  sudo: yes
+
+  roles:        
+    - nodejs
+    - git-client
+    - java
+    - mongodb
+    - oracle-xe

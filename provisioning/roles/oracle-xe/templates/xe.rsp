@@ -1,0 +1,5 @@
+ORACLE_HTTP_PORT={{ oracleHttpPort }}
+ORACLE_LISTENER_PORT={{ oracleListenerPort }}
+ORACLE_PASSWORD={{ oracleSystemPassword }}
+ORACLE_CONFIRM_PASSWORD={{ oracleSystemPassword }}
+ORACLE_DBENABLE=y

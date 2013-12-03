@@ -1,0 +1,6 @@
+# Mongodb role variables
+mongodbVersion: 2.4.8 
+mongodbDir: /var/lib/mongodb
+mongodbPort: 27017
+mongodbUser: mongodb
+mongodbPassword: mongodb

@@ -1,0 +1,3 @@
+oracleListenerPort: 1521
+oracleHttpPort: 8080
+oracleSystemPassword: manager

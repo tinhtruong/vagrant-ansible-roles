@@ -1,0 +1,15 @@
+# Install JDK
+- name: Ensure wget installed
+  yum: name=wget state=installed
+- name: Download JDK 64-bit
+  shell: "wget --no-check-certificate --no-cookies --output-document /tmp/jdk-${jdkVersion}-linux-x64.rpm --header 'Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com;' http://download.oracle.com/otn-pub/java/jdk/${jdkVersion}-${jdkBuild}/jdk-${jdkVersion}-linux-x64.rpm"
+- name: Install JDK 64-bit
+  shell: yum -y --nogpgcheck localinstall /tmp/jdk-{{ jdkVersion }}-linux-x64.rpm
+- name: Update alternatives
+  action: |
+    shell
+    /usr/sbin/alternatives --install /usr/bin/java java /usr/java/latest/bin/java 20000 &&
+    /usr/sbin/alternatives --install /usr/bin/javac javac /usr/java/latest/bin/javac 20000 &&
+    /usr/sbin/alternatives --install /usr/bin/jar jar /usr/java/latest/bin/jar 20000
+- name: Remove JDK download file
+  file: path=/tmp/jdk-{{ jdkVersion }}-linux-x64.rpm state=absent

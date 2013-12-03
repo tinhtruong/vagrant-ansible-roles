@@ -1,0 +1,8 @@
+- name: Install EPEL
+  command: rpm -Uvh http://download-i2.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm creates=/etc/yum.repos.d/epel.repo
+
+- name: Install nodejs
+  yum: name=npm state=installed
+
+- name: Install Yeoman
+  npm: name=yo global=yes

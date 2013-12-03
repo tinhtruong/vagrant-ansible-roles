@@ -1,0 +1,60 @@
+- name: Install dependencies
+  yum: name={{ item }} state=installed
+  with_items:
+   - libaio
+   - bc
+   - flex
+   - unzip
+
+- name: Create 2G swap file
+  command: /bin/dd if=/dev/zero of=/swapfile bs=1024 count=2048k creates=/swapfile
+
+- name: Make swap file
+  command: /sbin/mkswap /swapfile removes=/swapfile  
+
+- name: Activate swap
+  command: /sbin/swapon /swapfile removes=/swapfile
+
+- name: Adding swap to /etc/fstab
+  mount: name=/swapfile src=swap fstype=swap opts=defaults state=present
+
+- name: Set up swap file permission
+  command: chmod 0600 /swapfile removes=/swapfile
+
+- name: Uploading Oracle XE rpm zip
+  copy: src=oracle-xe-11.2.0-1.0.x86_64.rpm.zip dest=/tmp/oracle-xe.rpm.zip
+
+- name: Unzip rpm zip
+  shell: unzip /tmp/oracle-xe.rpm.zip -d /tmp/oracle-unzip
+
+- name: Upload installation response file
+  template: src=xe.rsp dest=/tmp/xe.rsp  
+
+- name: Install Oracle XE
+  shell: rpm -Uvh /tmp/oracle-unzip/Disk1/oracle-xe-11.2.0-1.0.x86_64.rpm
+
+- name: Configure /dev/shm part 1
+  command: umount /dev/shm
+
+- name: Configure /dev/shm part 2
+  command: mount -t tmpfs shmfs -o size=2048m /dev/shm
+
+- name: Configure Oracle XE
+  shell: /etc/init.d/oracle-xe configure responseFile=/tmp/xe.rsp
+
+- name: Setup Oracle environment
+  shell: /bin/echo 'source /u01/app/oracle/product/11.2.0/xe/bin/oracle_env.sh' >> /home/vagrant/.bash_profile
+
+- name: Uploading Oracle XE init setup file
+  copy: src=init-setup.sql dest=/tmp/init-setup.sql
+
+- name: Init setup Oracle
+  shell: ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe /u01/app/oracle/product/11.2.0/xe/bin/sqlplus system/{{ oracleSystemPassword }}@localhost < /tmp/init-setup.sql
+
+- name: Clean up
+  shell: rm -rf {{ item }}
+  with_items:
+   - /tmp/xe.rsp
+   - /tmp/oracle-unzip
+   - /tmp/oracle-xe.rpm.zip
+   - /tmp/init-setup.sql
